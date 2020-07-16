@@ -44,13 +44,15 @@ class Solution {
         //       理解：任何计算机的指令最终都逃不过为if else ，for ，recursion，
         //            因此算法最终的形态都是转化为这种形式
         // 解法2.动态规划 a[n] = a[n-1] + a[n-2] 拆分子结构
-        int f1 = 0,f2 = 0,f3 = 1;
-        for (int i = 1;i <= n;++i){
-            f1 = f2;
-            f2 = f3;
-            f3 = f2 + f1;
+        // 动态规划优化
+        if(n<=2) return n;
+        int first = 1,second = 2,sum = 0;
+        while (n-- > 2){
+            sum = first + second;
+            first = second;
+            second = sum;
         }
-        return f3;
+        return sum;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
