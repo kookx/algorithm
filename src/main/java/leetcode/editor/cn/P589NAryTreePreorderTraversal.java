@@ -94,7 +94,7 @@ class Solution {
     }
 
     // 解法2. 迭代 + 栈
-    public List<Integer> iteration(Node root, List<Integer> output) {
+    public void iteration(Node root, List<Integer> output) {
         // 前序遍历：根->左->右,处理手段：从右到左压入栈，先进后出
         Deque<Node> stack = new LinkedList<>();
         stack.add(root);
@@ -106,7 +106,6 @@ class Solution {
                 stack.add(child);
             }
         }
-        return output;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
