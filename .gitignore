@@ -31,3 +31,6 @@ target/
 *.rar
 
 *.tar.gz
+/src/main/java/leetcode/editor/cn/translation.json
+/src/main/java/leetcode/editor/cn/doc/
+/src/main/java/leetcode/editor/cn/all.json
