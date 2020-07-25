@@ -37,12 +37,25 @@ public class P70ClimbingStairs{
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int climbStairs(int n) {
-        // 解法1.递归
+
+        return formula(n);
+    }
+
+    public int recursion(int n) {
+        // 解法1.递归 （超时）
         //       缺点：1.存在重复值，要保存重复值需要额外的空间。
         //            2.可能会导致堆栈溢出。
         //            3.时间复杂度高，为O(2^n)
         //       理解：任何计算机的指令最终都逃不过为if else ，for ，recursion，
         //            因此算法最终的形态都是转化为这种形式
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+
+        int sum = recursion(n - 1) + recursion(n - 2);
+        return sum;
+    }
+
+    public int dp(int n) {
         // 解法2.动态规划 a[n] = a[n-1] + a[n-2] 拆分子结构
         // 动态规划优化
         if(n<=2) return n;
@@ -53,6 +66,13 @@ class Solution {
             second = sum;
         }
         return sum;
+    }
+
+    public int formula(int n) {
+        // 解法3. 使用通向公式
+        double sqrt5 = Math.sqrt(5);
+        double fibn = Math.pow((1 + sqrt5) / 2, n + 1) - Math.pow((1 - sqrt5) / 2, n + 1);
+        return (int)(fibn / sqrt5);
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
