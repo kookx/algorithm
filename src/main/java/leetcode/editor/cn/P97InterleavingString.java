@@ -24,8 +24,14 @@ public class P97InterleavingString{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
+
     public boolean isInterleave(String s1, String s2, String s3) {
-        // 解法1. 动态规划，参照官方
+
+        return dfs(s1, s2, s3);
+    }
+
+    // 解法1. 动态规划，参照官方
+    public boolean dp(String s1, String s2, String s3) {
         int n = s1.length(), m = s2.length(), t = s3.length();
 
         if( n + m != t){
@@ -50,6 +56,34 @@ class Solution {
 
         return f[n][m];
     }
+
+    // 解法2. 回溯 + 记忆化
+    public boolean dfs(String s1, String s2, String s3) {
+        if (s1 == null) s1 = "";
+        if (s2 == null) s2 = "";
+        if (s3 == null) s3 = "";
+
+        return helper(s1, s2, s3, 0, 0, 0, new Boolean[s1.length() + 1][s2.length() + 1]);
+    }
+
+    private boolean helper(String s1, String s2, String s3, int i, int j, int k, Boolean[][] memo) {
+        if (memo[i][j] != null) return memo[i][j];
+        if (i == s1.length() && j == s2.length() && k == s3.length()) {
+            return true;
+        }
+
+        if (k >= s3.length()) return memo[i][j] = false;
+
+        if (i < s1.length() && s1.charAt(i) == s3.charAt(k) && helper(s1, s2, s3, i + 1, j, k + 1, memo)) {
+            return true;
+        }
+        if (j < s2.length() && s2.charAt(j) == s3.charAt(k) && helper(s1, s2, s3, i, j+ 1, k + 1, memo)) {
+            return true;
+        }
+
+        return memo[i][j] = false;
+    }
+
 }
 //leetcode submit region end(Prohibit modification and deletion)
 
