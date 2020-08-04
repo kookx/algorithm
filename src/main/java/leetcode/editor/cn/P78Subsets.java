@@ -39,20 +39,35 @@ class Solution {
         return recursion(nums);
     }
 
-    //解法1. 回溯
-    // 回溯法是一种探索所有潜在可能性找到解决方案的算法。如果当前方案不是正确的解决方案，或者不是最后一个正确的解决方案，
-    // 则回溯法通过修改上一步的值继续寻找解决方案。
+    // 解法1. 回溯
+    // 思考：每个元素都可以选或不选，每次做出选择都将当前集合保存，然后撤销选择
+    //      遍历保存子集的顺序就是[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]
+    // 文字描述回溯过程：初始选择，选择1，递归选择2，递归选择3，撤销选择32再选3，撤销选择31再选2，递归选择3，撤销选择32再选3，结束
+    // 步骤：1.确定当前解决方案
+    // 2.制定下一步解决方案
+    // 3.修改当前解决方案
+    List<List<Integer>> res;
     private List<List<Integer>> recursion(int[] nums) {
-        List<List<Integer>> res = new ArrayList<>();
-        backtrack(0, nums, res, new ArrayList<>());
+        res = new ArrayList<>();
+        backtrack(0, nums, new ArrayList<>());
         return res;
     }
 
-    private void backtrack(int i, int[] nums, List<List<Integer>> res, ArrayList<Integer> tmp) {
+    private void backtrack(int i, int[] nums, ArrayList<Integer> tmp) {
+        // 每次保存当前集合
         res.add(new ArrayList<>(tmp));
+
+        //结束条件，子集的大小等于全集的大小了，由于后面的层级是递增的，到底了自然就无法继续下去了，这里可以省略
+//        if(tmp.size() == nums.length){
+//            return ;
+//        }
+        // 依次遍历元素
         for (int j = i; j < nums.length; j++) {
+            // 做出选择
             tmp.add(nums[j]);
-            backtrack(j + 1, nums, res, tmp);
+            // 将当前位置和集合传入下层
+            backtrack(j + 1, nums, tmp);
+            // 撤销选择
             tmp.remove(tmp.size() - 1);
         }
     }
