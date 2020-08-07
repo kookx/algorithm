@@ -33,24 +33,36 @@ public class P46Permutations{
 class Solution {
     // 解法：回溯
     List<List<Integer>> output;
+    int len;
+    boolean[] used;
     public List<List<Integer>> permute(int[] nums) {
         output = new ArrayList<>();
-        dfs(nums, 0, new ArrayList<>());
+        if (nums == null || nums.length == 0) {
+            return output;
+        }
+        len = nums.length;
+        used = new boolean[len];
+        dfs(nums, new ArrayList<>());
         return output;
     }
 
-    private void dfs(int[] nums, int begin, List<Integer> temp) {
-        if (temp.size() == nums.length){
-            output.add(new ArrayList<>(temp));
+
+    private void dfs(int[] nums, List<Integer> path) {
+        if (path.size() == len){
+            output.add(new ArrayList<>(path));
             return;
         }
 
-        for (int i = begin; i < nums.length; i++) {
-            // 这里contains需要消耗O(N)的复杂度，可以考虑优化
-            if (!temp.contains(nums[i])) {
-                temp.add(nums[i]);
-                dfs(nums, 0, temp);
-                temp.remove(temp.size() - 1);
+        for (int i = 0; i < len; i++) {
+            // 每次都从下标0开始搜索，并记录每个数有没有被使用过
+            if (!used[i]){
+                path.add(nums[i]);
+                used[i] = true;
+
+                dfs(nums, path);
+
+                used[i] = false;
+                path.remove(path.size() - 1);
             }
         }
     }
