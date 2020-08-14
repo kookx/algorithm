@@ -43,9 +43,7 @@
  
 package leetcode.editor.cn;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 //Java：有效的括号
 public class P20ValidParentheses{
@@ -57,29 +55,30 @@ public class P20ValidParentheses{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    private Map<Character,Character> mappings;
-
-    public Solution() {
-        this.mappings = new HashMap<>();
-        this.mappings.put('{','}');
-        this.mappings.put('(',')');
-        this.mappings.put('[',']');
-    }
-
+    // 解法1. 栈+DFS
+    // 思路：左括号入栈右括号出栈，栈为空表示有效，否则无效
     public boolean isValid(String s) {
-        // 解法1.栈 + hash 解决，原理：遇到左括号压入栈，遇到右括号弹出栈顶元素，最后检查栈内元素是否为空
-        Stack<Character> stack = new Stack<>();
-        for (int i = 0;i<s.length();++i) {
-            char c = s.charAt(i);
-            if(this.mappings.containsKey(c)) {
-                stack.push(c);
-            } else {
-                if(stack.empty() || this.mappings.get(stack.pop()) != c){
-                    return false;
-                }
+        char[] stack = new char[s.length()];
+        int head = 0;
+        for (Character c : s.toCharArray()) {
+            switch (c) {
+                case '(':
+                case '[':
+                case '{':
+                    stack[head++] = c;
+                    break;
+                case '}':
+                    if (head == 0 || stack[--head] != '{') return false;
+                    break;
+                case ']':
+                    if (head == 0 || stack[--head] != '[') return false;
+                    break;
+                case ')':
+                    if (head == 0 || stack[--head] != '(') return false;
+                    break;
             }
         }
-        return stack.isEmpty();
+        return head == 0;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
