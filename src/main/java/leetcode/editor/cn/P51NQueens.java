@@ -41,6 +41,7 @@ package leetcode.editor.cn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 //Java：N皇后
 public class P51NQueens{
@@ -59,86 +60,64 @@ class Solution {
     // 用row+col下标表示次对角线的某个点。
     // 举例：4x4的4皇后棋盘，主次对角线各有7条，主对角线下标根据公式row-col+n-1从0到6，次对角线下标根据公式row+col从0到6，满足数组条件
 
-    // 主对角线是否存在皇后
-    int[] mains;
-    // 次对角线是否存在皇后
-    int[] secondary;
-    // 某列方向是否存在皇后
-    int[] cols;
-    // 每行放置皇后的位置，下标代表行号，值代表列号
-    int[] queens;
-    int n;
-    List<List<String>> output;
+    //位运算解法，竖撇捺使用32位int表示
+    private List<List<String>> res;
+    private int n;
+
     public List<List<String>> solveNQueens(int n) {
-        // 初始化
-        mains = new int[2*n - 1];
-        secondary = new int[2*n - 1];
-        cols = new int[n];
-        queens = new int[n];
         this.n = n;
-        output = new ArrayList<>();
-        backtrack(0);
-        return output;
+        res = new ArrayList<>();
+        if (n == 0) {
+            return res;
+        }
+
+        int col = 0;
+        int master = 0;
+        int slave = 0;
+        Stack<Integer> stack = new Stack<>();
+
+        backtrack(0, col, master, slave, stack);
+        return res;
     }
 
-    private void backtrack(int row) {
-        if (row >= n) return;
-        // 在每一行的不同列尝试摆放皇后
-        for (int col = 0; col < n; col++) {
-            // 检查当前位置是否不被所有方向的皇后攻击到
-            if (isEnableSet(row, col)) {
-                // 在当前位置放置皇后
-                setQueue(row, col);
-                // 如果已经到最后一行，表示找到了一种方案，添加到结果集（如果中间没走就走不到最后一行）
-                if (row == n - 1) addSolution(queens);
-                // 继续找下一行的位置
-                backtrack(row + 1);
-                // 回溯，移除当前位置皇后，试其他位置
-                removeQueue(row, col);
+    private void backtrack(int row, int col, int master, int slave, Stack<Integer> stack) {
+        if (row == n) {
+            List<String> board = convert2board(stack, n);
+            res.add(board);
+            return;
+        }
+
+        // 针对每一列，尝试是否可以放置
+        for (int i = 0; i < n; i++) {
+            if (((col >> i) & 1) == 0
+                    && ((master >> (row + i)) & 1) == 0
+                    && ((slave >> (row - i + n - 1)) & 1) == 0) {
+                stack.add(i);
+                col ^= (1 << i);
+                master ^= (1 << (row + i));
+                slave ^= (1 << (row - i + n - 1));
+
+                backtrack(row + 1, col, master, slave, stack);
+
+                slave ^= (1 << (row - i + n - 1));
+                master ^= (1 << (row + i));
+                col ^= (1 << i);
+                stack.pop();
             }
         }
     }
 
-    private void addSolution(int[] queens) {
-        List<String> places = new ArrayList<>();
-        StringBuffer place;
-        for (int row = 0; row < n; row++) {
-            place = new StringBuffer();
-            int col = queens[row];
-            // 在皇后位置前填充"."
-            for (int i = 0; i < col; i++) place.append(".");
-            place.append("Q");
-            // 在皇后位置后填充"."
-            for (int j = 0; j < n - col - 1; j++) place.append(".");
-            places.add(place.toString());
+    private List<String> convert2board(Stack<Integer> stack, int n) {
+        List<String> board = new ArrayList<>();
+        for (Integer num : stack) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < n; i++) {
+                stringBuilder.append(".");
+            }
+            stringBuilder.replace(num, num + 1, "Q");
+            board.add(stringBuilder.toString());
         }
-        output.add(places);
-    }
-
-    private void removeQueue(int row, int col) {
-        mains[row - col + n - 1] = 0;
-        secondary[row + col] = 0;
-        cols[col] = 0;
-        // 加不加这行都可以，因为遍历时setQueue主要检查对角线和列是否允许皇后摆放，
-        // 不要想成把皇后放在了0列位置，这里只看成移除了这行的皇后，便于理解
-        queens[row] = 0;
-    }
-
-    private void setQueue(int row, int col) {
-        // 当前位置的主对角线方向已经有皇后了
-        mains[row - col + n - 1] = 1;
-        // 当前位置的次对角线方向已经有皇后了
-        secondary[row + col] = 1;
-        // 当前位置的列方向已经有皇后了
-        cols[col] = 1;
-        // 在 row 行，col 列 放置皇后
-        queens[row] = col;
-    }
-
-    private boolean isEnableSet(int row, int col) {
-        int res = cols[col] + mains[row - col + n - 1] + secondary[row + col];
-        // 如果所有方向都为0,表示该位置可以放
-        return res == 0;
+        return board;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
