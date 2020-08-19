@@ -33,22 +33,33 @@ public class P242ValidAnagram{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    public boolean isAnagram(String s, String t) {
-        // 解法1.排序后比较
-        // 解法1.使用hash原理，建一个26个字母大小计数器表，拆分字符串，记录每个字母出现的次数，s加，t减，
-        // 最终计数表内都为零，则表明为字母异位词
+    // 解法：计数表
+    // 思路：统计每个字母出现的次数，s加，t减
+    public boolean isAnagram1(String s, String t) {
         if (s.length() != t.length()) return false;
-
-        int[] counter = new int[26];
-
+        int[] table = new int[26];
         for (int i = 0; i < s.length(); ++i) {
-            counter[s.charAt(i) - 'a']++;
-            counter[t.charAt(i) - 'a']--;
+            table[s.charAt(i) - 'a']++;
+            table[t.charAt(i) - 'a']--;
         }
-        for (int i = 0; i < counter.length; ++i){
-            if (counter[i] < 0) return false;
+        for (int i = 0; i < table.length; ++i) {
+            if (table[i] != 0) return false;
         }
-
+        return true;
+    }
+    // 或者我们可以先用计数器表计算 s，然后用 t 减少计数器表中的每个字母的计数器
+    public boolean isAnagram(String s, String t) {
+        // 解法：计数表
+        // 思路：统计每个字母出现的次数，s加，t减
+        if (s.length() != t.length()) return false;
+        int[] table = new int[26];
+        for (int i = 0; i < s.length(); ++i) {
+            table[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < t.length(); ++i) {
+            table[t.charAt(i) - 'a']--;
+            if (table[t.charAt(i) - 'a'] < 0) return false;
+        }
         return true;
     }
 }
