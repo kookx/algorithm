@@ -34,22 +34,20 @@ public class P49GroupAnagrams{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
+    // 解法：hash表
     public List<List<String>> groupAnagrams(String[] strs) {
-        // 解答1.迭代 + hash , 思路参考242.字母异位词
-        if (strs.length == 0) return new ArrayList<>();
-
-        Map<String,List> map = new HashMap<>();
-
-        for (String s : strs) {
-            char[] c =  s.toCharArray();
-            Arrays.sort(c);
-            String key = String.valueOf(c);
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList());
-            }
-            map.get(key).add(s);
-        }
-        return new ArrayList(map.values());
+       if (strs.length == 0) return new ArrayList<>();
+       Map<String,List> map = new HashMap<>();
+       for (String c : strs) {
+           char[] s = c.toCharArray();
+           Arrays.sort(s);
+           String key = String.valueOf(s);
+           if (!map.containsKey(key)) {
+               map.put(key, new ArrayList());
+           }
+           map.get(key).add(c);
+       }
+       return new ArrayList(map.values());
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
