@@ -64,6 +64,27 @@ class Solution {
 
         return ans;
     }
+    // 解法2. 中心扩散
+    // 思路：回文串分为两种，第一种是奇数长度，中间字母不管，关于中间字母是对称的，另一种是偶数长度，关于中间线对称
+    //于是，我们依次对单个字母和两个字母进行扩散出去，来算出每种情况的回文子串的个数，最后相加就可以了
+    public int countSubstrings2(String s) {
+        int ans = 0;
+        for (int i = 0; i < s.length(); ++i) {
+            ans += check(s, i, i);
+            ans += check(s, i, i + 1);
+        }
+        return ans;
+    }
+
+    private int check(String s, int left, int right) {
+        int count = 0;
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            left--;
+            right++;
+            count++;
+        }
+        return count;
+    }
 }
 //leetcode submit region end(Prohibit modification and deletion)
 
