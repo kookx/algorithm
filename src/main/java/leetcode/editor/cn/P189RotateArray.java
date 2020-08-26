@@ -40,23 +40,44 @@ public class P189RotateArray{
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public void rotate(int[] nums, int k) {
-        // 解法1.暴力法枚举，每次将数组末尾的元素插入到数组头部
-        // 解法2. 反转，需知旋转k次，有k%n个尾部元素会被移到头部，即有k%n个尾部元素会被移到数组头部，
-        //       那么先进行一次完全反转，再把前k个元素完全反转，再把后n-k个元素完全反转复原
-        k %= nums.length;
-        reverse(nums, 0, nums.length - 1);
-        reverse(nums, 0, k - 1);
-        reverse(nums, k, nums.length -1);
+        cycle(nums, k);
     }
 
-    // 对某个数组某个范围的数据进行完全反转，即：双向向里扫，调换位置
-    private void reverse(int[] nums, int start, int end) {
+    // 解法1：反转
+    // 思路：移动的次数 n = k % nums.length，代表有n个数会被反转到后面
+    private void reverse(int[] nums, int k) {
+        k %= nums.length;
+        // 反转数组
+        helper(nums, 0, nums.length - 1);
+        // 反转前nums.length - k 个元素（恢复前面部分）
+        helper(nums, 0, k - 1);
+        // 反转后k个元素（恢复后面部分）
+        helper(nums, k, nums.length - 1);
+    }
+
+    private void helper(int[] nums, int start, int end) {
         while (start < end) {
             int temp = nums[start];
-            nums[start] = nums[end];
-            nums[end] = temp;
-            start++;
-            end--;
+            nums[start++] = nums[end];
+            nums[end--] = temp;
+        }
+    }
+
+    // 解法2：环状替换
+    private void cycle(int[] nums, int k) {
+        k = k % nums.length;
+        int count = 0;
+        for (int start = 0; count < nums.length; start++) {
+            int current = start;
+            int prev = nums[start];
+            do {
+                int next = (current + k) % nums.length;
+                int temp = nums[next];
+                nums[next] = prev;
+                prev = temp;
+                current = next;
+                count++;
+            } while (start != current);
         }
     }
 }
