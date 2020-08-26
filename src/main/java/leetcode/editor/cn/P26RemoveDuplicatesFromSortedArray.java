@@ -57,11 +57,8 @@ class Solution {
     public int removeDuplicates(int[] nums) {
         // 解法1.双指针，设定一个index指针指向数组开头，另一个指针i为index+1，
         // 向后遍历，遇到相等的值跳过，遇到不等值覆盖到nums[index+1]的位置，同时index++
-        if (nums.length == 0)
-            return 0;
-
         int index = 0;
-        for (int i = 1; i < nums.length; ++i){
+        for (int i = 1; i < nums.length; ++i) {
             if (nums[index] != nums[i]) {
                 nums[++index] = nums[i];
             }
