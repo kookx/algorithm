@@ -40,6 +40,7 @@
 package leetcode.editor.cn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -61,61 +62,45 @@ class Solution {
     // 举例：4x4的4皇后棋盘，主次对角线各有7条，主对角线下标根据公式row-col+n-1从0到6，次对角线下标根据公式row+col从0到6，满足数组条件
 
     //位运算解法，竖撇捺使用32位int表示
-    private List<List<String>> res;
-    private int n;
-
     public List<List<String>> solveNQueens(int n) {
-        this.n = n;
-        res = new ArrayList<>();
-        if (n == 0) {
-            return res;
-        }
-
-        int col = 0;
-        int master = 0;
-        int slave = 0;
-        Stack<Integer> stack = new Stack<>();
-
-        backtrack(0, col, master, slave, stack);
-        return res;
+        int[] queens = new int[n];
+        // 初始化棋盘，不放置任何皇后
+        Arrays.fill(queens, -1);
+        List<List<String>> solutions = new ArrayList<List<String>>();
+        solve(solutions, queens, n, 0, 0, 0, 0);
+        return solutions;
     }
 
-    private void backtrack(int row, int col, int master, int slave, Stack<Integer> stack) {
-        if (row == n) {
-            List<String> board = convert2board(stack, n);
-            res.add(board);
-            return;
+    public void solve(List<List<String>> solutions, int[] queens, int n, int row, int columns, int diagonals1, int diagonals2) {
+        if (row == n) {// 每行都放置了皇后，并且到了最后一行，代表一种摆放解法
+            List<String> board = generateBoard(queens, n);
+            solutions.add(board);
+        } else {
+            // 获取当前行在列、撇、捺方向都可放置的位置（~取反操作使1表示可放置的位置）：(1 << n) - 1为了确保二进制位数和n相等
+            int availablePositions = ((1 << n) - 1) & (~(columns | diagonals1 | diagonals2));
+            while (availablePositions != 0) {// 如果还有剩余可放置位置，依次尝试
+                // 获取当前行最低位可放置的位置：如二进制1000
+                int position = availablePositions & (-availablePositions);
+                // 放置在当前行最低位的可放置位置后，更新剩余可放置的位置
+                availablePositions = availablePositions & (availablePositions - 1);
+                // 根据position计算在当前行最低位可放置皇后的列号：bitCount计算二进制中的1的个数，position - 1表示：1000-1 = 111，即为第3列（下标0开始）
+                int column = Integer.bitCount(position - 1);
+                // 修改当前行的皇后位置为该列
+                queens[row] = column;
+                solve(solutions, queens, n, row + 1, columns | position, (diagonals1 | position) << 1, (diagonals2 | position) >> 1);
+                // 撤销修改
+                queens[row] = -1;
+            }
         }
+    }
 
-        // 针对每一列，尝试是否可以放置
+    public List<String> generateBoard(int[] queens, int n) {
+        List<String> board = new ArrayList<String>();
         for (int i = 0; i < n; i++) {
-            if (((col >> i) & 1) == 0
-                    && ((master >> (row + i)) & 1) == 0
-                    && ((slave >> (row - i + n - 1)) & 1) == 0) {
-                stack.add(i);
-                col ^= (1 << i);
-                master ^= (1 << (row + i));
-                slave ^= (1 << (row - i + n - 1));
-
-                backtrack(row + 1, col, master, slave, stack);
-
-                slave ^= (1 << (row - i + n - 1));
-                master ^= (1 << (row + i));
-                col ^= (1 << i);
-                stack.pop();
-            }
-        }
-    }
-
-    private List<String> convert2board(Stack<Integer> stack, int n) {
-        List<String> board = new ArrayList<>();
-        for (Integer num : stack) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < n; i++) {
-                stringBuilder.append(".");
-            }
-            stringBuilder.replace(num, num + 1, "Q");
-            board.add(stringBuilder.toString());
+            char[] row = new char[n];
+            Arrays.fill(row, '.');
+            row[queens[i]] = 'Q';
+            board.add(new String(row));
         }
         return board;
     }
