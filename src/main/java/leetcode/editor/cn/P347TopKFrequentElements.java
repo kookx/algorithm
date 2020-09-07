@@ -40,38 +40,38 @@ public class P347TopKFrequentElements{
     }
     
 //leetcode submit region begin(Prohibit modification and deletion)
+//基于桶排序求解「前 K 个高频元素」
 class Solution {
     public int[] topKFrequent(int[] nums, int k) {
-        // 解法1. 堆heap 先统计每次数字出现的次数放入一个Map中，将map元素插入到堆里，保证堆里只有k个元素
-        if (nums == null || nums.length == 0) {
-            return new int[]{};
-        }
-
-        Map<Integer, Integer> counter = new HashMap<>();
-        for (int num : nums) {
-            counter.put(num,counter.getOrDefault(num, 0) + 1);
-        }
-
-        // 定义一个小顶堆
-        Queue<Map.Entry<Integer, Integer>> maxHeap = new PriorityQueue<>((v1, v2) -> v1.getValue() - v2.getValue());
-
-        // 将元素放入堆里
-        for (Map.Entry<Integer,Integer> item : counter.entrySet()) {
-            if (maxHeap.size() < k) {
-                maxHeap.offer(item);
-            } else if (item.getValue() > maxHeap.peek().getValue()) {
-                maxHeap.poll();
-                maxHeap.offer(item);
+        List<Integer> res = new ArrayList();
+        // 使用字典，统计每个元素出现的次数，元素为键，元素出现的次数为值
+        HashMap<Integer,Integer> map = new HashMap();
+        for(int num : nums){
+            if (map.containsKey(num)) {
+                map.put(num, map.get(num) + 1);
+            } else {
+                map.put(num, 1);
             }
         }
 
-        int[] ans = new int[k];
-
-        for (int i = 0; i < k; ++i) {
-            ans[i] = maxHeap.poll().getKey();
+        //桶排序
+        //将频率作为数组下标，对于出现频率不同的数字集合，存入对应的数组下标
+        List<Integer>[] list = new List[nums.length+1];
+        for(int key : map.keySet()){
+            // 获取出现的次数作为下标
+            int i = map.get(key);
+            if(list[i] == null){
+                list[i] = new ArrayList();
+            }
+            list[i].add(key);
         }
 
-        return ans;
+        // 倒序遍历数组获取出现顺序从大到小的排列
+        for(int i = list.length - 1;i >= 0 && res.size() < k;i--){
+            if(list[i] == null) continue;
+            res.addAll(list[i]);
+        }
+        return res.stream().mapToInt(Integer::valueOf).toArray();
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
