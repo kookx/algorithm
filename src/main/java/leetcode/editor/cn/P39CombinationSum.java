@@ -59,41 +59,26 @@ public class P39CombinationSum{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    private List<List<Integer>> res;
-    private int len;
-    private Deque<Integer> path;
+    // 解法：回溯
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        // 回溯算法
-        // 思路：求一个candidates数组里所有数总和为target的集合 -> 转化求candidates数组里所有数总和为target-candidates[i]的集合加上candidates[i]
-        // 1.设置搜索点：考虑到返回集合中的可能存在的重复性
-        // 2.剪枝：考虑到没必要的搜索，可以先排序数组，如果小的数都不能满足要求，那就不用考虑后面的数了
-        res = new ArrayList<>();
-        len = candidates.length;
-        path = new ArrayDeque<>();
+        List<List<Integer>> res = new ArrayList<>();
         Arrays.sort(candidates);
-        dfs(candidates, target, 0);
+        dfs(candidates, target, 0, new ArrayList<>(), res);
         return res;
     }
 
-
-    private void dfs(int[] candidates, int residue, int start) {
-        if (residue == 0) {
-            res.add(new ArrayList<>(path));
+    private void dfs(int[] candidates, int target, int begin, List<Object> path, List<List<Integer>> res) {
+        if (target == 0) {
+            res.add(new ArrayList(path));
             return;
         }
-
-        for (int i = start; i < len; i++) {
-            // 数组排序过，这里可以剪枝，提前终止搜索
-            if (residue - candidates[i] < 0) {
+        for (int i = begin; i < candidates.length; ++i) {
+            if (target - candidates[i] < 0) {
                 break;
             }
-
-            path.addLast(candidates[i]);
-            // 这里设置下一层搜索起点为当前i的原因
-            //1.在搜索的时候，由于一个数可以使用多次，下一层的结点从这个搜索起点开始搜索
-            //2.在搜索起点 i 之前的数因为以前的分支搜索过了，所以一定会产生重复, 所以不必从0开始了，直接从i开始
-            dfs(candidates, residue - candidates[i], i);
-            path.removeLast();
+            path.add(candidates[i]);
+            dfs(candidates, target - candidates[i], i, path, res);
+            path.remove(path.size() - 1);
         }
     }
 }
