@@ -47,34 +47,26 @@ public class P40CombinationSumIi{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
-    // 解法1. 回溯
+    // 解法：回溯
     // 思路：步骤同组合I，调整起点位置为上层起点+1
-    List<List<Integer>> output;
-    Deque<Integer> path;
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
-        output = new ArrayList<>();
-        path = new ArrayDeque<>();
         Arrays.sort(candidates);
-        dfs(candidates, target, 0);
-        return output;
+        List<List<Integer>> res = new ArrayList<>();
+        Deque<Integer> path = new ArrayDeque<>();
+        dfs(candidates, target, path, 0, res);
+        return res;
     }
-
-    private void dfs(int[] candidates, int residue, int begin) {
-        if (residue == 0) {
-            output.add(new ArrayList<>(path));
+    private void dfs(int[] candidates, int target, Deque<Integer> path, int begin, List<List<Integer>> res) {
+        if (target == 0) {
+            res.add(new ArrayList<>(path));
             return;
         }
-
-        for (int i = begin; i < candidates.length; i++) {
-            if (residue - candidates[i] < 0) {
-                break;
-            }
-
+        for(int i = begin; i < candidates.length; i++) {
+            if (target - candidates[i] < 0) break;
             // 如果当前元素和前一个元素相等，并且该元素处于同一层函数for的不同位置
             if (i > begin && candidates[i] == candidates[i - 1]) continue;
-
             path.addLast(candidates[i]);
-            dfs(candidates, residue - candidates[i], i+1);
+            dfs(candidates, target - candidates[i], path, i + 1, res);
             path.removeLast();
         }
     }
