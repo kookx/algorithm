@@ -18,15 +18,14 @@
  
 package leetcode.editor.cn;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 //Java：二叉树的中序遍历
 public class P94BinaryTreeInorderTraversal{
     public static void main(String[] args) {
         Solution solution = new P94BinaryTreeInorderTraversal().new Solution();
         // TO TEST
+        System.out.println(solution.inorderTraversal(TreeNode.init(new Integer[]{1,null,2,3})));
     }
     
 //leetcode submit region begin(Prohibit modification and deletion)
@@ -40,50 +39,22 @@ public class P94BinaryTreeInorderTraversal{
  * }
  */
 class Solution {
+    // 解法：dfs，手动模拟栈
     public List<Integer> inorderTraversal(TreeNode root) {
-        List<Integer> ans = new LinkedList<>();
-        Deque<TreeNode> stack = new LinkedList<>();
-        TreeNode curr = root;
-        while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
-                stack.push(curr);
-                curr = curr.left;
+        List<Integer> res = new ArrayList<>();
+        if (root == null) return res;
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        TreeNode cur = root;
+        while (cur != null || !stack.isEmpty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
             }
-            curr = stack.pop();
-            ans.add(curr.val);
-            curr = curr.right;
+            cur = stack.pop();
+            res.add(cur.val);
+            cur = cur.right;
         }
-
-        return ans;
-    }
-
-    // 解法1. 递归
-    private void recursion(TreeNode node, List<Integer> ans) {
-        if (node != null) {
-            if (node.left != null) {
-                recursion(node.left, ans);
-            }
-            ans.add(node.val);
-            if (node.right != null) {
-                recursion(node.right,ans);
-            }
-        }
-    }
-
-    // 解法2.迭代+栈
-    private void iteration(TreeNode root, List<Integer> ans) {
-//        Stack<TreeNode> stack = new Stack<>(); // Stack性能差
-        Deque<TreeNode> stack = new LinkedList<>();
-        TreeNode curr = root;
-        while (curr != null || !stack.isEmpty()) {
-            while (curr != null) {
-                stack.push(curr);
-                curr = curr.left;
-            }
-            curr = stack.pop();
-            ans.add(curr.val);
-            curr = curr.right;
-        }
+        return res;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
