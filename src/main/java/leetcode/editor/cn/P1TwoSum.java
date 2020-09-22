@@ -17,6 +17,7 @@
  
 package leetcode.editor.cn;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,20 +30,38 @@ public class P1TwoSum{
     
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
+    // 解法：双指针
     public int[] twoSum(int[] nums, int target) {
-        // 解法1，暴力+hash
-        Map<Integer,Integer> map = new HashMap<>();
-        for (int i = 0; i < nums.length; ++i){
-            if (map.containsKey(target - nums[i])) {
-                int[] result = new int[2];
-                result[0] = map.get(target - nums[i]);
-                result[1] = i;
-                return result;
+        int[] copyNum = Arrays.copyOf(nums, nums.length);
+        Arrays.sort(copyNum);
+        int left = 0, right = copyNum.length - 1;
+        int[] indices = new int[2];
+        while (left < right) {
+            int sum = copyNum[left] + copyNum[right];
+            if (sum == target) {
+                indices[0] = left;
+                indices[1] = right;
+                break;
+            } else if (sum < target) {
+                left++;
             } else {
-                map.put(nums[i],i);
+                right--;
             }
         }
-        throw new IllegalArgumentException("No two sum solution");
+        // 找到拷贝数组求出的值在原数组中的位置
+        for (int i = 0; i < nums.length; ++i) {
+            if (copyNum[indices[0]] == nums[i]) {
+                indices[0] = i;
+                break;
+            }
+        }
+        for (int i = nums.length - 1; i >= 0; --i) {
+            if (copyNum[indices[1]] == nums[i]) {
+                indices[1] = i;
+                break;
+            }
+        }
+        return indices;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
