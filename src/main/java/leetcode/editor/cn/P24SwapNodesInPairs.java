@@ -38,14 +38,19 @@ public class P24SwapNodesInPairs{
  * }
  */
 class Solution {
-    // 解法：递归
+    // 解法：迭代
+    int first;
     public ListNode swapPairs(ListNode head) {
-        if (head == null || head.next == null) return head;
-
-        ListNode next = head.next;
-        head.next = swapPairs(next.next);
-        next.next = head;
-        return next;
+        ListNode temp = head;
+        while (temp != null && temp.next != null) {
+            // 交换两个结点的值
+            first = temp.val;
+            temp.val = temp.next.val;
+            temp.next.val = first;
+            // 后移两个结点
+            temp = temp.next.next;
+        }
+        return head;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
